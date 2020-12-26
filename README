@@ -1,0 +1,28 @@
+Name : Yisrael Bar 
+
+Exercise Name: Ex3 - HTTP server
+
+Submitted Files:
+#server.c-
+	This file implement a HTTP server 
+	this server constructs an HTTP response based on client's request and sends the response to the client. 
+
+    the list of the methods which the program uses:
+    handaleNewAccept: read the request from telnet or browser line, and send to checkRequest the requset to check the body of it and call the right func accordingilly
+    get_mime_type: get a path of a file and put out the fromat of the file
+    checkRequest: check if it is GET and have HTTP/1.1 and things like that
+    buildResponse: build up a response of an error by types :  302, 400, 403, 404, 500,501
+    buildResponseFileOrDir: build a respone of file or folder 
+    readFileAndSendToClient: read from file and send it to client
+
+#threadpool.c-
+This file include implementation of the methods from the header file. its like a out source libery
+    the list of the methods which the program uses:
+    create_threadpool: create a pool with threads max 200 theards, send then to do work and they go sleep there
+    dispatch: put a mission (func to do) in queue and wake up a threde
+    do_work: threads live here always until there is a mission to do and then they go back to sleep
+    destroy_threadpool: at the end we kill all the threads the clean up memory
+
+#README 	- this file.
+
+
