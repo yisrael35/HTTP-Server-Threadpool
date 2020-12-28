@@ -1,4 +1,5 @@
-Name : Yisrael Bar 
+Username: israelbr
+Name : Yisrael Bar Or ,ID: 205462948
 
 Exercise Name: Ex3 - HTTP server
 
@@ -14,6 +15,7 @@ Submitted Files:
     buildResponse: build up a response of an error by types :  302, 400, 403, 404, 500,501
     buildResponseFileOrDir: build a respone of file or folder 
     readFileAndSendToClient: read from file and send it to client
+    handleASigPipe: if there is a sigpipe 
 
 #threadpool.c-
 This file include implementation of the methods from the header file. its like a out source libery

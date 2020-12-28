@@ -11,6 +11,7 @@
 #include <dirent.h>
 #include <time.h>
 #include <errno.h>
+#include <signal.h>
 #define RFC1123FMT "%a, %d %b %Y %H:%M:%S GMT"
 #define BUFLEN 4000
 
@@ -75,9 +76,10 @@ void checkRequest(char *request, int new_fd);
 void buildResponse(int new_sock_fd, int num, char *path);
 void buildResponseFileOrDir(char * path, int new_fd);
 void readFileAndSendToClient(char *filename, int newsockfd);
-/*Yisrael Bar 10-24/12/20*/
+void handleASigPipe(int);
+/*Yisrael Bar 10-26/12/20*/
 int main(int argc, char* argv[]) {
-
+    signal(SIGPIPE , handleASigPipe);
     //check that we got enghou argument
     if (argc <  4)
     {
@@ -239,8 +241,10 @@ void checkRequest(char *request, int new_fd){
     }
     //check if the last 9 chars are a match to to HTTP/1.1
     if(strcmp(test, " HTTP/1.1") != 0){
-        buildResponse(new_fd, BadRequest, NULL); 
-        return; 
+        if(strcmp(test, " HTTP/1.0") != 0){
+            buildResponse(new_fd, BadRequest, NULL); 
+            return; 
+        }
     }
     // printf("this is from request: %s\n", test);
     //check there 3 words in the request
@@ -276,9 +280,10 @@ void checkRequest(char *request, int new_fd){
         buildResponse(new_fd, NotFound, NULL);
         return;
     }
-    if (strcmp(check , "/1.1")== 0)
+    if (strcmp(check , "/1.1")== 0 && strcmp(check , "/1.0")== 0 )
     {
         // printf("miss slase at the bignning\n");
+        
         buildResponse(new_fd, NotFound, NULL);
         return;
     }
@@ -495,7 +500,7 @@ void buildResponse(int new_sock_fd, int num, char *path){
         strcat(request , BadRequest400);
         strcat(request , html3);
         strcat(request , newLine); 
-        strcat(request , "Bad Request");
+        strcat(request , "Bad Request.");
         strcat(request , newLine); 
         strcat(request , html4);
     }else if (num == Forbidden)
@@ -558,7 +563,7 @@ void buildResponse(int new_sock_fd, int num, char *path){
     // printf("response: \r\n%s \n\n", request);
     int rc = write(new_sock_fd ,request ,(int)strlen(request)); 
     if (rc < 0){
-        printf("write to client failed\n");
+        printf("write to client failed in build response\n");
     }
     
 }
@@ -897,10 +902,14 @@ void readFileAndSendToClient(char *path, int new_fd){
 			if( write(new_fd, buf, sizeof(buf)) < 0){ 
                 printf("write to client failed --in read from file\n");
                 buildResponse(new_fd, IntrnalError , NULL);
+                fclose(fd);
                 return;
 			}
 			bzero(buf,sizeof(buf));
 		}
 	}
 	fclose(fd);
+}
+void handleASigPipe(int sig_pipe){
+    // printf("found a sig pipe\n");
 }
